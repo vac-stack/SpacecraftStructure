@@ -31,5 +31,6 @@ k = halfwaves + 12 / np.pi**4 * L**4 / R**2 / t1**2 * (1-v**2) / halfwaves
 Q = p * R**2 / E / t1**2
 shell_buck = (1.983 - 0.983 * np.e**(-23.14*Q)) * k * np.pi**2 * E * t1**2 / L**2 /12 / (1-v**2)    
 
-print("German fella")
+print("German fella335")
+print("Mass of shell [kg]: ", mass_shell)
 
