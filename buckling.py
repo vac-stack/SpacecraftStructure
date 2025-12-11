@@ -15,22 +15,22 @@ shell_density = 5  # [kg/m^3]
 mass_shell = A * L * shell_density
 
 #column buckling euler
-col_buck = np.pi**2 * E * I / A / L**2
+def column_buckling(E, I, A, L):
+    return np.pi**2 * E * I / A / L**2
 
 #shell buckling
 #lambda optimization
-halfwaves_unrounded = (12 / np.pi**4 * L**4 / R**2 / t1**2 * (1-v**2))**0.5
-halfwaves_low = math.floor(halfwaves_unrounded)
-halfwaves_high = math.ceil(halfwaves_unrounded)
-k_low = halfwaves_low + 12 / np.pi**4 * L**4 / R**2 / t1**2 * (1-v**2) / halfwaves_low
-k_high = halfwaves_high + 12 / np.pi**4 * L**4 / R**2 / t1**2 * (1-v**2) / halfwaves_high
-if k_low < k_high: halfwaves = halfwaves_low
-elif k_low >= k_high: halfwaves = halfwaves_high
+def shell_buckling(E, R, L, t1, p, v):
+    halfwaves_unrounded = (12 / np.pi**4 * L**4 / R**2 / t1**2 * (1-v**2))**0.5
+    halfwaves_low = math.floor(halfwaves_unrounded)
+    halfwaves_high = math.ceil(halfwaves_unrounded)
+    k_low = halfwaves_low + 12 / np.pi**4 * L**4 / R**2 / t1**2 * (1-v**2) / halfwaves_low
+    k_high = halfwaves_high + 12 / np.pi**4 * L**4 / R**2 / t1**2 * (1-v**2) / halfwaves_high
+    if k_low < k_high: halfwaves = halfwaves_low
+    elif k_low >= k_high: halfwaves = halfwaves_high
 
-k = halfwaves + 12 / np.pi**4 * L**4 / R**2 / t1**2 * (1-v**2) / halfwaves
-Q = p * R**2 / E / t1**2
-shell_buck = (1.983 - 0.983 * np.e**(-23.14*Q)) * k * np.pi**2 * E * t1**2 / L**2 /12 / (1-v**2)    
-
-print("German fella997")
-print("Mass of shell [kg]: ", mass_shell)
+    k = halfwaves + 12 / np.pi**4 * L**4 / R**2 / t1**2 * (1-v**2) / halfwaves
+    Q = p * R**2 / E / t1**2
+    shell_buck = (1.983 - 0.983 * np.e**(-23.14*Q)) * k * np.pi**2 * E * t1**2 / L**2 /12 / (1-v**2)    
+    return shell_buck
 
