@@ -1,1 +1,13 @@
-'hello'
+### finding the optimum shape, dimensions and weight of the sandwich plate
+### output all dimensions of the sandwich panels: 
+### --> mass and area
+### hex: side length
+### cylinder: diameter
+
+#input
+
+R = 1 #radius of the load bearing structure
+W = 1 #length of one side of the reaction wheel (limiting dimension)
+
+rho_nomex = 1 #density of nomex
+rho_fabric = 1 #density of fabric 
