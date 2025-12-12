@@ -6,8 +6,31 @@
 
 #input
 
-R = 1 #radius of the load bearing structure
-W = 1 #length of one side of the reaction wheel (limiting dimension)
+import numpy as np
+import math as math
 
-rho_nomex = 1 #density of nomex
-rho_fabric = 1 #density of fabric 
+
+R = 1 #[m] radius of the load bearing structure
+W = 1 #[m] length of one side of the reaction wheel (limiting dimension)
+
+rho_nomex = 1 #[kg/m^3] density of nomex
+rho_fabric = 1 #[kg/m^3] density of fabric 
+rho_panel = 1 #[kg/m^3] density of the closing panels
+
+n_s = 1 #[-] number of sandwich panel
+n_cT = 1 #[-] number of closing panel top and/or bottom
+h = 1 #[-] height of closing panel
+
+
+#mass of sandwich per sqm
+m_sand = 1
+
+def hex(R, W, ns, n_cT, rho_panel):
+
+    H_dash_hex = 2/math.sqrt(3)*(R+W) #side length of the hex
+    P_hex = 6*H_dash_hex #perimeter of hex
+    A_hex = (3*math.sqrt(3)/2*H_dash_hex) - (math.pi*R**2) #area of hex
+    m_hex = n_s*m_sand*A_hex #total mass of panel
+    A_cT = n_cT*(3*math.sqrt(3)/2*H_dash_hex)#area of closing panel(s)
+
+
