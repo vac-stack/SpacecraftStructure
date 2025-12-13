@@ -1,8 +1,4 @@
 ### finding the optimum shape, dimensions and weight of the sandwich plate
-### output all dimensions of the sandwich panels: 
-### --> mass and area
-### hex: side length
-### cylinder: diameter
 
 #input
 
@@ -24,6 +20,8 @@ h = 1 #[-] height of closing panel
 #mass of sandwich per sqm
 m_sand = 2*rho_fabric*0.19805/1000+rho_nomex*15/1000
 
+
+#calcualtions of different geometries
 def hex(R, W, n_s, n_cT, m_sand, rho_panel):
 
     h_hex = 2/math.sqrt(3)*(R+W) #side length of the hex
