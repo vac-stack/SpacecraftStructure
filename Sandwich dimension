@@ -72,15 +72,16 @@ def compare_geom():
         ("circle", m_circ, r_circ),
         ("square", m_sq, w_sq)
     ]
-
+    
     geom, min_mass, length = min(geometries, key=lambda x: x[1])
+    max_mass = max(geometries, key=lambda x: x[1])[1]
+    weight_saved = max_mass - min_mass
+    
+    return geom, min_mass, length, weight_saved
 
-
-    return geom, min_mass, length
-
-geom, min_mass, length=compare_geom()
-
+geom, min_mass, length, weight_saved = compare_geom()
 
 print(f"Minimum mass geometry: {geom}")
-print(f"Mass: {min_mass}")
-print(f"Corresponding length: {length}")
+print(f"Mass: {min_mass:.3f} kg")
+print(f"Corresponding length: {length:.3f} m")
+print(f"Weight saved: {weight_saved:.3f} kg")
