@@ -4,7 +4,7 @@
 
 import math as math
 
-R = 0.15 #[m] radius of the load bearing structure
+R = 0.26 #[m] radius of the load bearing structure
 W = 0.5 #[m] length of one side of the reaction wheel (limiting dimension)
 
 rho_nomex = 48.2 #[kg/m^3] density of nomex
