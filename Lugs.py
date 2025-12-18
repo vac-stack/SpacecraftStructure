@@ -122,7 +122,7 @@ shear_margin, d_metric_o, M_size = fastener_diameter(30000,4,2,480*10**6)
 ### bending and shear of the lug
 
 def Ixx_zz(w_1,t_1):
-    I_xx = max((t_1**3*w_1)/12.0, 1e-15) #Ixx of the horizontal polate, same for Iyy
+    I_xx = max((t_1**3*w_1)/12.0, 1e-15) # Ixx of the horizontal polate, same for Iyy
     I_zz = max((w_1**3*t_1)/12.0, 1e-15)
     return I_xx, I_zz
 
