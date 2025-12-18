@@ -1,9 +1,14 @@
 import math
 import numpy as np
 
+### fasteners calculations
+
 n_l = 1 #number of attatchemnts
 n_f = 1 #numebr of lugs
-tau_max = 1 #ultimate shear stress of fastener
+tau_max_f = 1 #ultimate shear stress of fastener
+tau_max_l = 1
+
+ultimate_bending_lug = 1
 
 metric_bolt_d_i = [0.729, 0.829, 0.929, 1.075, 1.221, 1.421, 1.567, 1.713, 2.013, 2.459, 2.850, 3.242, 3.688, 4.134, 4.917, 5.917, 6.647]
 metric_bolt_name = ['M1', 'M1.1', 'M1.2', 'M1.4', 'M1.6', 'M1.8', 'M2', 'M2.2', 'M2.5', 'M3', 'M3.5', 'M4', 'M4.5', 'M5', 'M6', 'M7', 'M8']
@@ -13,12 +18,9 @@ F_x = 1
 F_y = 1
 F_z = 1
 
-shear_yield_lug = 1
-shear_yield_sc = 1 
 
-
-def fastener_diameter(F_z, n_l, n_f, shear_yield_lug):
-    D = math.sqrt(32*F_z / n_l / n_f / (3*math.pi*shear_yield_lug))
+def fastener_diameter(F_z, n_l, n_f, tau_max_f):
+    D = math.sqrt(32*F_z / n_l / n_f / (3*math.pi*tau_max_f))
     
     # Pick the smallest bolt >= D
     for i, d in enumerate(metric_bolt_d_i):
@@ -31,7 +33,7 @@ def fastener_diameter(F_z, n_l, n_f, shear_yield_lug):
         raise ValueError("No metric bolt large enough")
     
     F_applied = F_z / n_l / n_f
-    F_allowable = 3 * shear_yield_lug * math.pi * D_metric_i**2 / 32
+    F_allowable = 3 * tau_max_f * math.pi * D_metric_i**2 / 32
     shear_margin = F_allowable / F_applied - 1
     
     return shear_margin, D_metric_o, M_size
@@ -115,5 +117,49 @@ def FastenersRanked(fasteners):
 
 
 shear_margin, d_metric_o, M_size = fastener_diameter(30000,4,2,480*10**6)
+
+
+### bending and shear of the lug
+
+def Ixx_zz(w_1,t_1):
+    I_xx = max((t_1**3*w_1)/12.0, 1e-15) #Ixx of the horizontal polate, same for Iyy
+    I_zz = max((w_1**3*t_1)/12.0, 1e-15)
+    return I_xx, I_zz
+
+def bending(Ixx, w_2, Fz, t_2, n_l):
+    M = Fz/n_l * (w_2/2)
+    bending_applied = (M * t_2/2)/Ixx
+    bending_margin = ultimate_bending_lug/ bending_applied-1
+    return t_2, w_2, bending_margin
+
+def length(F_z,t_2, tau_max_l):
+    length = (3*F_z/n_l)/(8*t_2*tau_max_l)
+    if length < 0.001:
+        l = 0.001
+    else: 
+        l = length
+    shear_margin = (8*t_2*tau_max_l/3/l)/(F_z/n_l)-1
+    return l, shear_margin
+
+### tear-outs 
+
+def tearout(fasteners, w_1, l, t_2):
+    min_distance = []
+    for f in fasteners:
+        x, y = f[0], f[1]
+        min_distance.extend([
+            w_1/2 + x,
+            w_1/2 - x,
+            l/2 + y,
+            l/2 - y
+        ])
+    edge_distance = min(min_distance)
+
+    F_max = max(abs(f[2]) for f in fasteners) 
+    F_tear = 2* edge_distance*t_2*tau_max_l
+    tearout_margin = F_tear/F_max-1
+
+    return tearout_margin
+
 
 print(shear_margin, d_metric_o, M_size)
