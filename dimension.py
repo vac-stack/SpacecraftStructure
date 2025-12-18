@@ -4,7 +4,6 @@
 
 import math as math
 
-
 R = 0.15 #[m] radius of the load bearing structure
 W = 0.5 #[m] length of one side of the reaction wheel (limiting dimension)
 
@@ -16,10 +15,8 @@ n_s = 2 #[-] number of sandwich panel
 n_cT = 1 #[-] number of closing panel top and/or bottom
 h = 1 #[-] height of closing panel
 
-
 #mass of sandwich per sqm
 m_sand = 2*rho_fabric*0.19805/1000+rho_nomex*15/1000
-
 
 #calcualtions of different geometries
 def hex(R, W, n_s, n_cT, m_sand, rho_panel):
