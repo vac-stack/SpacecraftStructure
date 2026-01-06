@@ -13,8 +13,8 @@ c_res = 0.2 # residual propellant/total propellant fraction
 c_t = 0.2 # tank structure fraction from previous report
 
 # orbiter
-m_po = 512.32 # [kg] empty mass orbiter excluding tanks
-c_tO = 0.13 # tank mass/propellant mass fraction
+m_po = 304 # [kg] empty mass orbiter excluding tank 512.32s
+c_tO = 0.05 # tank mass/propellant mass fraction
 
 # orbit geometry
 R_m = 2240e3   # central body radius (m)
@@ -133,7 +133,7 @@ def tank_radius(h):
 
     return r_int , t_Ti_prop, M_Ti_prop
 
-"""
+
 R_tank = ((3/4)*(V_s/np.pi))**(1/3) # [m] tank radius from volume
 t_comp = (P_0*(R_tank + t_Ti))/(sigma_allow*V_f) # [m] required wall thickness using hoop stress relation
 V_comp = (4/3) * np.pi * ((R_tank + t_comp + t_Ti)**3 - (R_tank + t_Ti)**3) # [m^3] composite volume
@@ -142,7 +142,7 @@ M_comp = V_comp * V_f * rho_carbon + V_comp * (1 - V_f) * rho_resin # [kg] mass 
 M_Ti = V_Ti * rho_Ti # [kg] mass titanium liner
 M_tot = M_comp + M_Ti # [kg] total mass
 
-h=1
+h=1.3445
 R_tank_prop,t_Ti_prop , M_Ti_prop = tank_radius(h)
 
 # -------------------------------------------------------
@@ -169,5 +169,5 @@ print(f"Gas mass: {m_N2:.3f} kg")
 print(f"Total gas vessel mass: {(M_tot+m_N2):.3f} kg")
 
 
-"""
+
 
