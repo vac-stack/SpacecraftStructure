@@ -1,7 +1,5 @@
 ### finding the optimum shape, dimensions and weight of the sandwich plate
 
-#input
-
 import math as math
 
 R = 0.26 #[m] radius of the load bearing structure

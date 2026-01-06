@@ -1,0 +1,33 @@
+variables 
+
+fixed 
+W: reaction wheel side length [m]
+rho_nomex: nomex density for sandwich panel [kg/m^3]
+rho_fabric: fabric density for sandwich panel [kg/m^3]
+n_s: number of sandwich panel
+n_cT: number of closing panel on top/bottom
+h: sapcecraft height [m]
+m_sand: mass of sandwich panel for sqm
+tau_max_f: shear yield stress fastener [Pa]
+tau_max_l: shear yirld stress lug [Pa]
+kt: stress concentration factor
+ultimate_bending_lug: ultimate stress of lug
+
+
+to be determined
+F_x: [N]
+F_y: [N]
+F_z: [N]
+t_x: thickness of whatever wall the lugs are attaching to
+
+
+to be optimised
+R: radius of the load bearing structure [m]
+n_l: number of lugs
+n_f: number of fasteners
+w_1: width of lug
+w_2: length of lug horizontal plate
+t_1: thickneess lug bottom
+t_2: thickness lug top
+l: length of lug horizontal plate
+

@@ -3,19 +3,18 @@ import numpy as np
 
 ### shit to optimise: n_l, n_f, w_2, t_2, w_1, t_1
 
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------
 # dont forget constrians: add minimum distance of holes from edge, minimum l, minimum w_2 - as function of d_fo
-# -> minimum t_1, t_2 can be added here i guess idk
+# -> minimum t_1, t_2
 # no the code is not duplicated, they're for horizontal and vertical part, im too lazy to unify them
 # i know its unnecessary long im sorry
-# have not tested the lugs, have only tested fastener
-# -------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------
 
 
 n_l = 1 #number of attatchemnts
 n_f = 1 #numeber of lugs
-tau_max_f = 1 #ultimate shear stress of fastener
-tau_max_l = 1 #ultimate shear stress of lug
+tau_max_f = 1 #yield shear stress of fastener
+tau_max_l = 1 #yield shear stress of lug
 
 kt = 3 #stress concentration factor
 
@@ -54,10 +53,7 @@ def fastener_diameter(F_z, n_l, n_f, tau_max_f):
     return shear_margin, D_metric_o, M_size
 
 
-
-
-
-# pull through from wp4, moment and force modified, minimum number of lugs modified 
+# pull through from wp4, moment and force modified, fastener constrians modified
 # pull through vertical and horizontal is done in a separate part
 
 ### vertical pull through
@@ -119,7 +115,7 @@ def CreateFastenerList_v(n, l, w_1, D_fo):
     if n_side == 1:
         y_positions = [0.0]
     else:
-        d = (l - 4*D_fo) / (n_side - 1)
+        d = (l - 3*D_fo) / (n_side - 1)
         y_positions = [-(2*D_fo + i*d) + l/2 for i in range(n_side)]
 
     for y in y_positions:
@@ -196,7 +192,7 @@ def CreateFastenerList_h(n, w_2, w_1, D_fo):
     if n_side == 1:
         y_positions = [0.0]
     else:
-        d = (w_2 - 4*D_fo) / (n_side - 1)
+        d = (w_2 - 3*D_fo) / (n_side - 1)
         y_positions = [-(2*D_fo + i*d) + w_2/2 for i in range(n_side)]
 
     for y in y_positions:
