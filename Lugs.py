@@ -36,7 +36,7 @@ metric_bolt_d_o = [1, 1.1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.5, 3, 3.5, 4, 4.5, 5, 6
 def fastener_diameter(F_z, n_l, n_f, tau_max_f):
 
     F_s = F_z / (n_l * n_f)   # shear
-    F_n = F_x / (n_l * n_f)   # axial (set 0 if none)
+    F_n = F_x / (n_l * n_f)   # axial
 
     D = math.sqrt(
         (4 / (math.pi * tau_max_f)) *
