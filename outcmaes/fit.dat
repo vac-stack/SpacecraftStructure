@@ -1,2 +1,2 @@
-% # columns="iteration, evaluation, sigma, axis ratio, bestever, best, median, worst objective function value, interquartile range, 25%tile, current best feasible f-value, elapsed wallclock time [s], further/more values", seed=788004, Tue Jan  6 17:33:11 2026, <python>{}</python>
-1 24 0.2661136057063347 1.0000428580612375 1e+20 1.0000000000000000e+20 1e+20 1e+20 0.0 1e+20 nan 0.0   
+% # columns="iteration, evaluation, sigma, axis ratio, bestever, best, median, worst objective function value, interquartile range, 25%tile, current best feasible f-value, elapsed wallclock time [s], further/more values", seed=733989, Tue Jan  6 17:46:13 2026, <python>{}</python>
+1 24 0.28043180576517684 1.0000428580612375 1e+20 1.0000000000000000e+20 1e+20 1e+20 0.0 1e+20 nan 0.0   

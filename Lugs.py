@@ -227,8 +227,8 @@ def Ixx(w_1,t_1):
     return I_xx
 
 #bending horizontal plate
-def bending(Ixx,kt, w_2, F_z, t_2, n_l):
-    M = F_z*kt/n_l * (w_2/2)
+def bending(Ixx, w_2, F_z, t_2, n_l):
+    M = F_z/n_l * (w_2/2)
     bending_applied = (M * t_2/2)/Ixx
     bending_margin = ultimate_bending_lug/ bending_applied-1
     return t_2, w_2, bending_margin

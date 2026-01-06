@@ -44,7 +44,7 @@ def objective(x_scaled, penalize_factor=1e4):
         sm_fastener, d_out, m_size = lg.fastener_diameter(F_Z, n_l, n_f, TAU_MAX_F)
 
         # 2. Bending Margin 
-        Ixx, _ = lg.Ixx_zz(w1, t1)
+        Ixx, _ = lg.Ixx(w1, t1)
         _, _, sm_bending = lg.bending(Ixx, w2, F_Z, t2, n_l)
 
         # 3. Pull-through and Plate Shear 
