@@ -34,7 +34,15 @@ metric_bolt_name = ['M1', 'M1.1', 'M1.2', 'M1.4', 'M1.6', 'M1.8', 'M2', 'M2.2', 
 metric_bolt_d_o = [1, 1.1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 7, 8]
 
 def fastener_diameter(F_z, n_l, n_f, tau_max_f):
-    D = math.sqrt(32*F_z / n_l / n_f / (3*math.pi*tau_max_f))
+
+    F_s = F_z / (n_l * n_f)   # shear
+    F_n = F_x / (n_l * n_f)   # axial (set 0 if none)
+
+    D = math.sqrt(
+        (4 / (math.pi * tau_max_f)) *
+        math.sqrt(F_n**2 + 3*F_s**2)
+    )
+
     
     # Pick the smallest bolt >= D
     for i, d in enumerate(metric_bolt_d_i):
@@ -46,9 +54,13 @@ def fastener_diameter(F_z, n_l, n_f, tau_max_f):
     else:
         raise ValueError("No metric bolt large enough")
     
-    F_applied = F_z / n_l / n_f
-    F_allowable = 3 * tau_max_f * math.pi * D_metric_i**2 / 32
-    shear_margin = F_allowable / F_applied - 1
+    #actual stress
+    A = math.pi*D_metric_i**2/4
+    sigma = F_n / A
+    tau = F_s/A
+    sigma_vm = math.sqrt(sigma**2+3*tau**2)
+
+    shear_margin = tau_max_f / sigma_vm - 1
     
     return shear_margin, D_metric_o, M_size
 
