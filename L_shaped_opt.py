@@ -9,15 +9,15 @@ ULTIMATE_BENDING_LUG = 450e6  # ultimate stress of lug [Pa]
 RHO_LUG = 2700                # Lug density (kg/m^3) 
 
 # --- 2. Determining Loads  ---
-F_X = 100.0  
-F_Y = 100.0  
-F_Z = 300.0 
+F_X = 400 
+F_Y = 400 
+F_Z = 1200
 T_X = 0.0002   # Thickness of the wall the lugs attach to 
 
 # --- 3. Optimization Search Space (R Removed)  ---
 param_bounds = {
     'n_l': (2, 10),         # number of lugs 
-    'n_f': (1, 4),          # number of fasteners 
+    'n_f': (1, 2),          # number of fasteners 
     'w_1': (0.015, 0.15),   # width of lug 
     'w_2': (0.015, 0.15),   # length of lug horizontal plate 
     't_1': (0.002, 0.025),  # thickness lug bottom 
