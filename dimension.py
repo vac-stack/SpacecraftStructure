@@ -2,8 +2,8 @@
 
 import math as math
 
-R = 0.26 #[m] radius of the load bearing structure
-W = 0.5 #[m] length of one side of the reaction wheel (limiting dimension)
+R = 0.2152 #[m] radius of the load bearing structure
+W = 0.55 #[m] length of one side of the reaction wheel (limiting dimension)
 
 rho_nomex = 48.2 #[kg/m^3] density of nomex
 rho_fabric = 1611 #[kg/m^3] density of fabric 
@@ -11,7 +11,7 @@ rho_panel = 1156 #[kg/m^3] density of the closing panels
 
 n_s = 2 #[-] number of sandwich panel
 n_cT = 1 #[-] number of closing panel top and/or bottom
-h = 1 #[-] height of closing panel
+h = 1.35 #[-] height of closing panel
 
 #mass of sandwich per sqm
 m_sand = 2*rho_fabric*0.19805/1000+rho_nomex*15/1000
@@ -80,3 +80,4 @@ print(f"Minimum mass geometry: {geom}")
 print(f"Mass: {min_mass:.3f} kg")
 print(f"Corresponding length: {length:.3f} m")
 print(f"Weight saved: {weight_saved:.3f} kg")
+print(m_sand)

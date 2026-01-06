@@ -108,9 +108,9 @@ def WorstShearMargin_v(fasteners, yield_lug, yield_sc):
         
     return min(margins)
 
-def CreateFastenerList_v(n, l, w_1, D_fo):
+def CreateFastenerList_v(n_f, l, w_1, D_fo):
     array = []
-    n_side = n // 2
+    n_side = n_f // 2
 
     if n_side == 1:
         y_positions = [0.0]
@@ -185,9 +185,9 @@ def WorstShearMargin_h(fasteners, yield_lug, yield_sc):
         
     return min(margins)
 
-def CreateFastenerList_h(n, w_2, w_1, D_fo):
+def CreateFastenerList_h(n_f, w_2, w_1, D_fo):
     array = []
-    n_side = n // 2
+    n_side = n_f // 2
 
     if n_side == 1:
         y_positions = [0.0]
