@@ -253,7 +253,7 @@ if __name__ == "__main__":
 
     result = mass_converging_optimizer(
         inputs=inputs,
-        material_names=["Al7075", "Ti-6Al-4V"],
+        material_names=["Al7075-T6", "Ti-6Al-4V", "CFRP"],
         m0=15.0,      # initial total mass guess [kg]
         eps=0.02,     # convergence tolerance [kg]
         max_outer_iter=30
