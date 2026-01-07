@@ -15,9 +15,9 @@ class Material:
     sigma_y: float  # yield [Pa]
 
 MATERIALS: Dict[str, Material] = {
-    "Al7075": Material("Al7075", E=71e9,  nu=0.33, rho=2810, sigma_y=430e6),
-    "Ti-6Al-4V": Material("Ti-6Al-4V", E=113.8e9,  nu=0.342	, rho=4430, sigma_y=950e6),
-    # to be filled::: "graphite epoxy": Material("graphite epoxy", E=113.8e9,  nu=0.342	, rho=4430, sigma_y=950e6),
+    "Al7075-T6": Material("Al7075-T6", E=70e9,  nu=0.33, rho=2810, sigma_y=5.03e8),
+    "Ti-6Al-4V": Material("Ti-6Al-4V", E=114e9,  nu=0.34	, rho=4420, sigma_y=8.28e8),
+    "CFRP": Material("CFRP", E=200e9,  nu=0.	, rho=1600, sigma_y=1.2e9),
     # have to change to the correct material
 }
 # ----------------------------
@@ -239,16 +239,16 @@ def mass_converging_optimizer(inputs: DesignInputs,
 # ----------------------------
 if __name__ == "__main__":
     inputs = DesignInputs(
-        m_fixed=12.0,           # kg (everything except main structural shell)
-        p_internal=2.0e5,       # Pa (example: 2 bar differential)
-        g_load=6.0*9.80665,     # m/s^2 (example: 6g axial)
+        m_fixed=801.32,        # kg (everything except main structural shell so payload and structure)
+        p_internal=5.0e5,       # Pa (5 bar)
+        g_load=9.0*9.80665,     # m/s^2 ( 6g axial with margin of 1.5 so 9g)
         fos_buckling=1.5,
-        fos_yield=1.25,
-        t_min=0.8e-3,           # 0.8 mm
-        R_bounds=(0.08, 0.25),  # m
-        L_bounds=(0.20, 1.20),  # m
+        fos_yield=1.5,
+        t_min=0.5e-3,           # 0.5 mm guess
+        R_bounds=(0.2152, 0.25),  # m
+        L_bounds=(1.35, 2.5),  # m
         R_required_min=0.10,    # m (from tank packaging)
-        L_required_min=0.40,    # m (from tank packaging)
+        L_required_min=1.35,    # m (from tank packaging)
     )
 
     result = mass_converging_optimizer(
