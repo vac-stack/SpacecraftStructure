@@ -17,7 +17,7 @@ class Material:
 MATERIALS: Dict[str, Material] = {
     "Al7075-T6": Material("Al7075-T6", E=70e9,  nu=0.33, rho=2810, sigma_y=5.03e8),
     "Ti-6Al-4V": Material("Ti-6Al-4V", E=114e9,  nu=0.34	, rho=4420, sigma_y=8.28e8),
-    "CFRP": Material("CFRP", E=200e9,  nu=0.	, rho=1600, sigma_y=1.2e9),
+    "CFRP": Material("CFRP", E=200e9,  nu=0.9	, rho=1600, sigma_y=1.2e9),
     # have to change to the correct material
 }
 # ----------------------------
