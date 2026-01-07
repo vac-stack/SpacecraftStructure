@@ -4,7 +4,7 @@ from typing import Dict, Tuple, Callable, List
 from scipy.optimize import minimize
 
 # ----------------------------
-# Materials (extend as needed)
+# Materials
 # ----------------------------
 @dataclass(frozen=True)
 class Material:
@@ -12,19 +12,20 @@ class Material:
     E: float      # Young's modulus [Pa]
     nu: float     # Poisson's ratio [-]
     rho: float    # density [kg/m^3]
-    sigma_y: float  # yield/allowable [Pa] (optional, but useful)
+    sigma_y: float  # yield [Pa]
 
 MATERIALS: Dict[str, Material] = {
     "Al7075": Material("Al7075", E=71e9,  nu=0.33, rho=2810, sigma_y=430e6),
-    # Add CFRP etc. if you have appropriate buckling knockdowns
+    "Ti-6Al-4V": Material("Ti-6Al-4V", E=113.8e9,  nu=0.342	, rho=4430, sigma_y=950e6),
+    # to be filled::: "graphite epoxy": Material("graphite epoxy", E=113.8e9,  nu=0.342	, rho=4430, sigma_y=950e6),
+    # have to change to the correct material
 }
-
 # ----------------------------
-# Geometry / mass models
+# the geometry and the mass models
 # ----------------------------
             #mass
 def shell_surface_area(R: float, L: float) -> float:
-    # cylinder lateral area (no endcaps) [m^2]
+    # cylinder lateral area [m^2]
     return 2.0 * np.pi * R * L
 
 def shell_mass(R: float, t1: float, L: float, mat: Material) -> float:
@@ -39,11 +40,11 @@ def ring_cross_section_area(R: float, t1: float) -> float:
 
 def second_moment_area_thin_ring(R: float, t1: float) -> float:
     # Thin-walled ring bending stiffness about centroidal axis:
-    # I ≈ π R^3 t  (common thin-ring approximation)
+    # I ≈ π R^3 t
     return np.pi * (R ** 3) * t1
 
 # ----------------------------
-# Buckling models from your screenshot
+# Buckling models
 # ----------------------------
 def sigma_cr_euler(R: float, t1: float, L: float, E: float) -> float:
     """
