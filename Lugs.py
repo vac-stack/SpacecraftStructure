@@ -13,8 +13,9 @@ import numpy as np
 
 tau_max_f = 1 #yield shear stress of fastener
 tau_max_l = 1 #yield shear stress of lug
+sigma_y_lug = 1 #yield stress
 
-ultimate_bending_lug = 1
+ultimate_bending_lug = 1 # [Pa] bending allowable
 
 
 #total forces like in 5.5 diagram **NOT from wp4** [N]
@@ -78,7 +79,7 @@ def ForceAtFastener_v(fasteners, w_2,n_f,n_l,F_z, F_y):
         ri = np.sqrt(fasteners[i][0]**2 + fasteners[i][1]**2) # Calculate distance to cg of this fastener
         
         M_x = F_z * w_2/2 # Moment
-        F_due_moment = M_x*ri/ri_sq_tot # Force due to moment
+        F_due_moment = M_x * fasteners[i][0] / ri_sq_tot # Force due to moment
 
         if M_x > 0:
             if fasteners[i][0] > 0:
@@ -97,8 +98,8 @@ def ForceAtFastener_v(fasteners, w_2,n_f,n_l,F_z, F_y):
 def bearing_stress_v(fasteners, t_lug, t_sc, D_fo):
     
     # Contact area with fastener per surface
-    area_lug = np.pi*D_fo*t_lug
-    area_sc = np.pi*D_fo*t_sc
+    area_lug = D_fo*t_lug
+    area_sc = D_fo*t_sc
 
     # Calculate stress per fastener per surface
     for i in range(len(fasteners)):
@@ -155,7 +156,7 @@ def ForceAtFastener_h(fasteners,n_f, n_l,F_z, F_y,l):
         ri = np.sqrt(fasteners[i][0]**2 + fasteners[i][1]**2) # Calculate distance to cg of this fastener
         
         M_x = F_y * l/2 # Moment
-        F_due_moment = M_x*ri/ri_sq_tot # Force due to moment
+        F_due_moment = M_x * fasteners[i][0] / ri_sq_tot # Force due to moment
 
         if M_x > 0:
             if fasteners[i][0] > 0:
@@ -174,7 +175,7 @@ def ForceAtFastener_h(fasteners,n_f, n_l,F_z, F_y,l):
 def bearing_stress_h(fasteners, t_lug, t_sc, D_fo):
     
     # Contact area with fastener per surface
-    area_lug = np.pi*D_fo*t_lug
+    area_lug = D_fo*t_lug
     area_sc = np.pi*D_fo*t_sc
 
     # Calculate stress per fastener per surface
@@ -233,7 +234,7 @@ def bending(I_xxh, w_2, F_z, t_2, n_l):
 def length_lug(F_z, t_2, tau_max_l, n_l, w_1, M,l):
     I_xxv =  max((t_2**3*w_1)/12.0, 1e-15)
     bending_stress = (M*l/2)/I_xxv
-    shear_stress = 3*F_z/n_l/8/t_2/l
+    shear_stress = (((3*F_z)/n_l)/8)/t_2/l
     combined_stress = math.sqrt(bending_stress**2+3*shear_stress**2)
     shear_capacity = 8.0 * t_2 * tau_max_l / (3.0 * l)
     shear_margin = shear_capacity / (F_z / n_l) - 1.0
@@ -256,7 +257,7 @@ def tearout_vertical(fasteners, l, w_1, t_2):
     edge_distance = min(min_distance)
 
     F_max = max(abs(f[2]) for f in fasteners) 
-    F_tear = 2* edge_distance*t_2*tau_max_l
+    F_tear = 2* edge_distance*t_2*sigma_y_lug
     tearout_margin = F_tear/F_max-1
 
     return tearout_margin
@@ -274,7 +275,7 @@ def tearout_horizontal(fasteners, w_1, w_2, t_2):
     edge_distance = min(min_distance)
 
     F_max = max(abs(f[2]) for f in fasteners) 
-    F_tear = 2* edge_distance*t_2*tau_max_l
+    F_tear = 2* edge_distance*t_2*sigma_y_lug
     tearout_margin = F_tear/F_max-1
 
     return tearout_margin
