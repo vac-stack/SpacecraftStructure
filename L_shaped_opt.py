@@ -45,7 +45,7 @@ def objective(x, penalize_factor=1e10):
 
         # 2. Bending Margin
         Ixx = lg.Ixx(w1, t1)
-        _, _, sm_bending = lg.bending(Ixx, KT, w2, F_Z, t2, n_l)
+        _, _, sm_bending = lg.bending(Ixx, w2, F_Z, t2, n_l)
 
         # 3. Pull-through and Plate Shear (Vertical as per Lug logic)
         f_list = lg.CreateFastenerList_v(n_f, l_dim, w1, d_out)
