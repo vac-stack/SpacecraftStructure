@@ -101,7 +101,7 @@ if __name__ == '__main__':
     # Final margin evaluation
     sm_f, d_out, m_size = lg.fastener_diameter(F_X,F_Z, n_l, n_f, TAU_MAX_F)
     Ixx = lg.Ixx(w1, t1)
-    _, _, sm_b = lg.bending(Ixx, w2, F_Z, t2, n_l)
+    _, _, sm_b, _ = lg.bending(Ixx, w2, F_Z, t2, n_l)
     f_list = lg.CreateFastenerList_v(n_f, l_dim, w1, d_out)
     f_list = lg.ForceAtFastener_v(f_list, w2, n_f, n_l, F_Z, F_Y)
     f_list = lg.bearing_stress_v(f_list, t1, T_X, d_out)
