@@ -99,7 +99,7 @@ if __name__ == '__main__':
     w1, w2, t1, t2, l_dim = best_params['w_1'], best_params['w_2'], best_params['t_1'], best_params['t_2'], best_params['l']
 
     # Final margin evaluation
-    sm_f, d_out, m_size = lg.fastener_diameter(F_Z, n_l, n_f, TAU_MAX_F)
+    sm_f, d_out, m_size = lg.fastener_diameter(F_X,F_Z, n_l, n_f, TAU_MAX_F)
     Ixx = lg.Ixx(w1, t1)
     _, _, sm_b = lg.bending(Ixx, w2, F_Z, t2, n_l)
     f_list = lg.CreateFastenerList_v(n_f, l_dim, w1, d_out)
