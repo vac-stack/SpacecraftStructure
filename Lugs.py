@@ -234,9 +234,9 @@ def bending(I_xxh, w_2, F_z, t_2, n_l):
 def length_lug(F_z, t_2, tau_max_l, n_l, w_1, M,l):
     I_xxv =  max((t_2**3*w_1)/12.0, 1e-15)
     bending_stress = (M*l/2)/I_xxv
-    shear_stress = (((3*F_z)/n_l)/8)/t_2/l
+    shear_stress = (3*F_z/(n_l)) / (2 * t_2 * l)
     combined_stress = math.sqrt(bending_stress**2+3*shear_stress**2)
-    shear_capacity = 8.0 * t_2 * tau_max_l / (3.0 * l)
+    shear_capacity = 2.0 * t_2 * tau_max_l / (3.0 * l)
     shear_margin = shear_capacity / (F_z / n_l) - 1.0
 
     return combined_stress, shear_margin
