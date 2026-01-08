@@ -219,22 +219,26 @@ def FastenersRanked_h(fasteners):
 ### bending and shear of the lug
 
 def Ixx(w_1,t_1):
-    I_xx = max((t_1**3*w_1)/12.0, 1e-15) #Ixx of the horizontal polate, same for Iyy
-    return I_xx
+    I_xxh = max((t_1**3*w_1)/12.0, 1e-15) #Ixx of the horizontal polate, same for Iyy
+    return I_xxh
 
 #bending horizontal plate
-def bending(Ixx, w_2, F_z, t_2, n_l):
+def bending(I_xxh, w_2, F_z, t_2, n_l):
     M = F_z/n_l * (w_2/2)
-    bending_applied = (M * t_2/2)/Ixx
+    bending_applied = (M * t_2/2)/I_xxh
     bending_margin = ultimate_bending_lug/ bending_applied-1
-    return t_2, w_2, bending_margin
+    return t_2, w_2, bending_margin, M
 
-#shear vertical
-def length_lug(F_z, kt,t_2, tau_max_l, n_l):
-    length = (3*F_z*kt/n_l)/(8*t_2*tau_max_l)
-    l = max(length, 0.01)
-    shear_margin = (8*t_2*tau_max_l/3/l)/(F_z/n_l) - 1
-    return l, shear_margin
+#shear and bending combines stress
+def length_lug(F_z, t_2, tau_max_l, n_l, w_1, M,l):
+    I_xxv =  max((t_2**3*w_1)/12.0, 1e-15)
+    bending_stress = (M*l/2)/I_xxv
+    shear_stress = 3*F_z/n_l/8/t_2/l
+    combined_stress = math.sqrt(bending_stress**2+3*shear_stress**2)
+    shear_capacity = 8.0 * t_2 * tau_max_l / (3.0 * l)
+    shear_margin = shear_capacity / (F_z / n_l) - 1.0
+
+    return combined_stress, shear_margin
 
 ### tear-outs 
 
