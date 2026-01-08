@@ -249,14 +249,12 @@ if __name__ == "__main__":
         max_outer_iter=30
     )
 
-
-    print(result["message"])
-        #if result["success"]:
-            #sol = result["solution"]
-            #print(f"Material: {sol['mat']}")
-            #print(f"R={sol['R']:.4f} m, t1={sol['t1']*1e3:.3f} mm, L={sol['L']:.4f} m")
-            #print(f"Shell mass: {sol['m_shell']:.3f} kg")
-            #print(f"Total mass: {sol['m_total']:.3f} kg")
+    if result["success"]:
+        sol = result["solution"]
+        print(f"Material: {sol['mat']}")
+        print(f"R={sol['R']:.4f} m, t1={sol['t1']*1e3:.3f} mm, L={sol['L']:.4f} m")
+        print(f"Shell mass: {sol['m_shell']:.3f} kg")
+        print(f"Total mass: {sol['m_total']:.3f} kg")
 
     if result["success"]:
         sol = result["solution"]

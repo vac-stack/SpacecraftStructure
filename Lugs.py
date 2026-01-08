@@ -17,11 +17,6 @@ tau_max_l = 1 #yield shear stress of lug
 ultimate_bending_lug = 1
 
 
-#total forces like in 5.5 diagram **NOT from wp4** [N]
-F_x = 1 
-F_y = 1
-F_z = 1
-
 ### fasteners calculations
 
 #list for metric bolt [mm]
