@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from typing import Dict, Tuple, Callable, List
 from scipy.optimize import minimize
 
-# ----------------------------
+
 # Materials
-# ----------------------------
+
 @dataclass(frozen=True)
 class Material:
     name: str
@@ -15,14 +15,13 @@ class Material:
     sigma_y: float  # yield [Pa]
 
 MATERIALS: Dict[str, Material] = {
-    "Al7075": Material("Al7075", E=71e9,  nu=0.33, rho=2810, sigma_y=430e6),
-    "Ti-6Al-4V": Material("Ti-6Al-4V", E=113.8e9,  nu=0.342	, rho=4430, sigma_y=950e6),
-    # to be filled::: "graphite epoxy": Material("graphite epoxy", E=113.8e9,  nu=0.342	, rho=4430, sigma_y=950e6),
-    # have to change to the correct material
+    "Al7075-T6": Material("Al7075-T6", E=70e9,  nu=0.33, rho=2810, sigma_y=5.03e8),
+    "Ti-6Al-4V": Material("Ti-6Al-4V", E=114e9,  nu=0.34	, rho=4420, sigma_y=8.28e8),
+    "CFRP": Material("CFRP", E=200e9,  nu=0.4	, rho=1600, sigma_y=1.2e9),
 }
-# ----------------------------
+
 # the geometry and the mass models
-# ----------------------------
+
             #mass
 def shell_surface_area(R: float, L: float) -> float:
     # cylinder lateral area [m^2]
@@ -43,14 +42,10 @@ def second_moment_area_thin_ring(R: float, t1: float) -> float:
     # I ≈ π R^3 t
     return np.pi * (R ** 3) * t1
 
-# ----------------------------
+
 # Buckling models
-# ----------------------------
+
 def sigma_cr_euler(R: float, t1: float, L: float, E: float) -> float:
-    """
-    Eq (4.1): sigma_cr = (pi^2 E I) / (A L^2)
-    using thin ring approximations for I and A.
-    """
     A = ring_cross_section_area(R, t1)
     I = second_moment_area_thin_ring(R, t1)
     return (np.pi**2 * E * I) / (A * L**2)
@@ -65,9 +60,6 @@ def k_param(L: float, R: float, t1: float, nu: float, lam: float) -> float:
 
 def sigma_cr_shell(R: float, t1: float, L: float, mat: Material, p: float,
                    lam_grid: np.ndarray = None) -> float:
-    """
-    Eq (4.2) with minimization over lambda (lam) as requested in the text.
-    """
     if lam_grid is None:
         # Reasonable search grid (you can refine)
         lam_grid = np.linspace(0.2, 20.0, 400)
@@ -83,20 +75,19 @@ def sigma_cr_shell(R: float, t1: float, L: float, mat: Material, p: float,
 
     return bracket * k_min * (np.pi**2 * E) / (12.0 * (1.0 - nu**2)) * (t1 / L)**2
 
-# ----------------------------
+
 # Loads + constraints
-# ----------------------------
+
 @dataclass
 class DesignInputs:
     m_fixed: float          # mass of everything except main shell [kg]
     p_internal: float       # pressure difference in shell [Pa]
-    g_load: float           # launch axial acceleration [m/s^2] (or g*n)
+    g_load: float           # launch axial acceleration [m/s^2]
     fos_buckling: float     # factor of safety for buckling
-    fos_yield: float        # factor of safety for yield (optional)
+    fos_yield: float        # factor of safety for yield
     t_min: float            # min thickness [m]
     R_bounds: Tuple[float, float]
     L_bounds: Tuple[float, float]
-    # constraints from tanks (example)
     R_required_min: float   # minimum radius to fit tanks [m]
     L_required_min: float   # minimum length to fit tanks [m]
 
@@ -128,7 +119,7 @@ def optimize_shell_for_mass_guess(m_guess: float,
 
     bounds = [
         (max(inputs.R_bounds[0], inputs.R_required_min), inputs.R_bounds[1]),
-        (inputs.t_min, None),  # upper thickness not bounded here; you can add if needed
+        (inputs.t_min, None), 
         (max(inputs.L_bounds[0], inputs.L_required_min), inputs.L_bounds[1]),
     ]
 
@@ -235,37 +226,105 @@ def mass_converging_optimizer(inputs: DesignInputs,
     }
 
 # ----------------------------
-# TO BE FILLED WITH CORRECT VALUES
 # ----------------------------
 if __name__ == "__main__":
     inputs = DesignInputs(
-        m_fixed=12.0,           # kg (everything except main structural shell)
-        p_internal=2.0e5,       # Pa (example: 2 bar differential)
-        g_load=6.0*9.80665,     # m/s^2 (example: 6g axial)
+        m_fixed=801.32,        # kg (everything except main structural shell so payload and structure)
+        p_internal=5.0e5,       # Pa (5 bar)
+        g_load=9.0*9.80665,     # m/s^2 ( 6g axial with margin of 1.5 so 9g)
         fos_buckling=1.5,
-        fos_yield=1.25,
-        t_min=0.8e-3,           # 0.8 mm
-        R_bounds=(0.08, 0.25),  # m
-        L_bounds=(0.20, 1.20),  # m
-        R_required_min=0.10,    # m (from tank packaging)
-        L_required_min=0.40,    # m (from tank packaging)
+        fos_yield=1.5,
+        t_min=0.35e-3,           # 0.35 mm guess
+        R_bounds=(0.2252, 0.25),  # m +100mm for attachment
+        L_bounds=(1.35, 2.5),  # m
+        R_required_min=0.2252,    # m (from tank packaging)
+        L_required_min=1.35,    # m (from tank packaging)
     )
 
     result = mass_converging_optimizer(
         inputs=inputs,
-        material_names=["Al7075", "Ti-6Al-4V"],
-        m0=15.0,      # initial total mass guess [kg]
+        material_names=["Al7075-T6", "Ti-6Al-4V", "CFRP"],
+        m0=801.32,      # initial total mass guess [kg]
         eps=0.02,     # convergence tolerance [kg]
         max_outer_iter=30
     )
 
 
     print(result["message"])
+        #if result["success"]:
+            #sol = result["solution"]
+            #print(f"Material: {sol['mat']}")
+            #print(f"R={sol['R']:.4f} m, t1={sol['t1']*1e3:.3f} mm, L={sol['L']:.4f} m")
+            #print(f"Shell mass: {sol['m_shell']:.3f} kg")
+            #print(f"Total mass: {sol['m_total']:.3f} kg")
+
     if result["success"]:
         sol = result["solution"]
+        mat = MATERIALS[sol["mat"]]
+
+        R = sol["R"]
+        t1 = sol["t1"]
+        L = sol["L"]
+        m_total = sol["m_total"]
+
+        # ----------------------------
+        # Recompute stresses
+        # ----------------------------
+        sigma_app = axial_compressive_stress(
+            m_total, R, t1, inputs.g_load
+        )
+
+        sigma_hoop = hoop_stress_thin_cyl(
+            inputs.p_internal, R, t1
+        )
+
+        # ----------------------------
+        # Buckling allowables
+        # ----------------------------
+        sigma_eu = sigma_cr_euler(R, t1, L, mat.E) / inputs.fos_buckling
+        sigma_sh = sigma_cr_shell(R, t1, L, mat, inputs.p_internal) / inputs.fos_buckling
+
+        sigma_buckling_allow = min(sigma_eu, sigma_sh)
+
+        # ----------------------------
+        # Yield allowable
+        # ----------------------------
+        sigma_yield_allow = mat.sigma_y / inputs.fos_yield
+
+        # ----------------------------
+        # Margins of safety
+        # ----------------------------
+        mos_buckling = sigma_buckling_allow / sigma_app - 1.0
+        mos_yield_axial = sigma_yield_allow / sigma_app - 1.0
+        mos_yield_hoop = sigma_yield_allow / sigma_hoop - 1.0
+
+        mos_yield = min(mos_yield_axial, mos_yield_hoop)
+
+        # ----------------------------
+        # Prints
+        # ----------------------------
+        print(result["message"])
         print(f"Material: {sol['mat']}")
-        print(f"R={sol['R']:.4f} m, t1={sol['t1']*1e3:.3f} mm, L={sol['L']:.4f} m")
+        print(f"R = {R:.4f} m")
+        print(f"t = {t1*1e3:.3f} mm")
+        print(f"L = {L:.4f} m")
         print(f"Shell mass: {sol['m_shell']:.3f} kg")
-        print(f"Total mass: {sol['m_total']:.3f} kg")
+        print(f"Total mass: {m_total:.3f} kg")
+
+        print("\n--- Stress summary ---")
+        print(f"Applied axial stress: {sigma_app/1e6:.2f} MPa")
+        print(f"Hoop stress: {sigma_hoop/1e6:.2f} MPa")
+
+        print("\n--- Allowables (with FoS = 1.5) ---")
+        print(f"Euler buckling allowable: {sigma_eu/1e6:.2f} MPa")
+        print(f"Shell buckling allowable: {sigma_sh/1e6:.2f} MPa")
+        print(f"Yield allowable: {sigma_yield_allow/1e6:.2f} MPa")
+
+        print("\n--- Margins of Safety ---")
+        print(f"Buckling MoS: {mos_buckling:.3f}")
+        print(f"Yield MoS (axial): {mos_yield_axial:.3f}")
+        print(f"Yield MoS (hoop): {mos_yield_hoop:.3f}")
+        print(f"Governing Yield MoS: {mos_yield:.3f}")
+
     else:
         print("No solution.")
