@@ -126,7 +126,7 @@ def tank_radius(h):
 
     # monoprop system
     R_tank_prop = r_int # [m] fuel tank radius
-    t_Ti_prop = (P_f*R_tank_prop)/(sigma_allow_Ti)
+    t_Ti_prop = (P_f*R_tank_prop*SF)/(sigma_allow_Ti)
     V_Ti_prop = (4/3) * np.pi * ((R_tank_prop + t_Ti_prop)**3 - R_tank_prop**3) + (h-2*r_int)*np.pi*((r_int+t_Ti_prop)**2-r_int**2)
     M_Ti_prop = V_Ti_prop * rho_Ti 
 
