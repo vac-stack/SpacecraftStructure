@@ -232,15 +232,22 @@ def bending(I_xxh, w_2, F_z, t_2, n_l):
 
 #shear and bending combines stress
 def length_lug(F_z, t_2, tau_max_l, n_l, w_1, M,l):
-    I_xxv =  max((t_2**3*w_1)/12.0, 1e-15)
-    bending_stress = (M*l/2)/I_xxv
-    shear_stress = (3*F_z/(n_l)) / (2 * t_2 * l)
-    combined_stress = math.sqrt(bending_stress**2+3*shear_stress**2)
+    I_xxv = max((t_2**3 * w_1) / 12.0, 1e-15)
+
+    # bending stress and margin
+    bending_stress = (M * l / 2) / I_xxv
+    bending_allowable = 1.0  # normalised, or replace with actual yield stress
+    bending_margin = bending_allowable / bending_stress - 1.0
+
+    # shear stress and margin
+    shear_stress = (F_z / n_l) / (2 * t_2 * l)
     shear_capacity = 2.0 * t_2 * tau_max_l / (3.0 * l)
     shear_margin = shear_capacity / (F_z / n_l) - 1.0
 
-    return combined_stress, shear_margin
+    # use the **most critical** (smallest) margin
+    critical_margin = min(bending_margin, shear_margin)
 
+    return critical_margin
 ### tear-outs 
 
 def tearout_vertical(fasteners, l, w_1, t_2):
