@@ -11,4 +11,3 @@ def mass_lug(D_fo, t_1, t_2, t_x, w_1, l, w_2, n_f):
     mass_total_lug = w_1*l*t_2+w_2*w_1*t_1 - 2*mass_fastener_total
 
     return mass_total_lug
-
