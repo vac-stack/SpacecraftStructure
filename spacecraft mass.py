@@ -17,7 +17,7 @@ class Material:
 MATERIALS: Dict[str, Material] = {
     "Al7075-T6": Material("Al7075-T6", E=70e9,  nu=0.33, rho=2810, sigma_y=5.03e8),
     "Ti-6Al-4V": Material("Ti-6Al-4V", E=114e9,  nu=0.34	, rho=4420, sigma_y=8.28e8),
-    "CFRP": Material("CFRP", E=200e9,  nu=0.9	, rho=1600, sigma_y=1.2e9),
+    "CFRP": Material("CFRP", E=200e9,  nu=0.4	, rho=1600, sigma_y=1.2e9),
     # have to change to the correct material
 }
 # ----------------------------
@@ -244,10 +244,10 @@ if __name__ == "__main__":
         g_load=9.0*9.80665,     # m/s^2 ( 6g axial with margin of 1.5 so 9g)
         fos_buckling=1.5,
         fos_yield=1.5,
-        t_min=0.5e-3,           # 0.5 mm guess
-        R_bounds=(0.2152, 0.25),  # m
+        t_min=0.35e-3,           # 0.35 mm guess
+        R_bounds=(0.2252, 0.25),  # m +100mm for attachment
         L_bounds=(1.35, 2.5),  # m
-        R_required_min=0.10,    # m (from tank packaging)
+        R_required_min=0.2252,    # m (from tank packaging)
         L_required_min=1.35,    # m (from tank packaging)
     )
 
@@ -261,11 +261,80 @@ if __name__ == "__main__":
 
 
     print(result["message"])
+        #if result["success"]:
+            #sol = result["solution"]
+            #print(f"Material: {sol['mat']}")
+            #print(f"R={sol['R']:.4f} m, t1={sol['t1']*1e3:.3f} mm, L={sol['L']:.4f} m")
+            #print(f"Shell mass: {sol['m_shell']:.3f} kg")
+            #print(f"Total mass: {sol['m_total']:.3f} kg")
+
     if result["success"]:
         sol = result["solution"]
+        mat = MATERIALS[sol["mat"]]
+
+        R = sol["R"]
+        t1 = sol["t1"]
+        L = sol["L"]
+        m_total = sol["m_total"]
+
+        # ----------------------------
+        # Recompute stresses
+        # ----------------------------
+        sigma_app = axial_compressive_stress(
+            m_total, R, t1, inputs.g_load
+        )
+
+        sigma_hoop = hoop_stress_thin_cyl(
+            inputs.p_internal, R, t1
+        )
+
+        # ----------------------------
+        # Buckling allowables
+        # ----------------------------
+        sigma_eu = sigma_cr_euler(R, t1, L, mat.E) / inputs.fos_buckling
+        sigma_sh = sigma_cr_shell(R, t1, L, mat, inputs.p_internal) / inputs.fos_buckling
+
+        sigma_buckling_allow = min(sigma_eu, sigma_sh)
+
+        # ----------------------------
+        # Yield allowable
+        # ----------------------------
+        sigma_yield_allow = mat.sigma_y / inputs.fos_yield
+
+        # ----------------------------
+        # Margins of safety
+        # ----------------------------
+        mos_buckling = sigma_buckling_allow / sigma_app - 1.0
+        mos_yield_axial = sigma_yield_allow / sigma_app - 1.0
+        mos_yield_hoop = sigma_yield_allow / sigma_hoop - 1.0
+
+        mos_yield = min(mos_yield_axial, mos_yield_hoop)
+
+        # ----------------------------
+        # Prints
+        # ----------------------------
+        print(result["message"])
         print(f"Material: {sol['mat']}")
-        print(f"R={sol['R']:.4f} m, t1={sol['t1']*1e3:.3f} mm, L={sol['L']:.4f} m")
+        print(f"R = {R:.4f} m")
+        print(f"t = {t1*1e3:.3f} mm")
+        print(f"L = {L:.4f} m")
         print(f"Shell mass: {sol['m_shell']:.3f} kg")
-        print(f"Total mass: {sol['m_total']:.3f} kg")
+        print(f"Total mass: {m_total:.3f} kg")
+
+        print("\n--- Stress summary ---")
+        print(f"Applied axial stress: {sigma_app/1e6:.2f} MPa")
+        print(f"Hoop stress: {sigma_hoop/1e6:.2f} MPa")
+
+        print("\n--- Allowables (with FoS = 1.5) ---")
+        print(f"Euler buckling allowable: {sigma_eu/1e6:.2f} MPa")
+        print(f"Shell buckling allowable: {sigma_sh/1e6:.2f} MPa")
+        print(f"Yield allowable: {sigma_yield_allow/1e6:.2f} MPa")
+
+        print("\n--- Margins of Safety ---")
+        print(f"Buckling MoS: {mos_buckling:.3f}")
+        print(f"Yield MoS (axial): {mos_yield_axial:.3f}")
+        print(f"Yield MoS (hoop): {mos_yield_hoop:.3f}")
+        print(f"Governing Yield MoS: {mos_yield:.3f}")
+
     else:
         print("No solution.")
