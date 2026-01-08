@@ -11,12 +11,10 @@ import numpy as np
 # ---------------------------------------------------------------------------------------------------------------
 
 
-n_l = 1 #number of attatchemnts
-n_f = 1 #numeber of lugs
 tau_max_f = 1 #yield shear stress of fastener
 tau_max_l = 1 #yield shear stress of lug
 
-kt = 3 #stress concentration factor
+#stress concentration factor
 
 ultimate_bending_lug = 1
 
@@ -33,7 +31,7 @@ metric_bolt_d_i = [0.729, 0.829, 0.929, 1.075, 1.221, 1.421, 1.567, 1.713, 2.013
 metric_bolt_name = ['M1', 'M1.1', 'M1.2', 'M1.4', 'M1.6', 'M1.8', 'M2', 'M2.2', 'M2.5', 'M3', 'M3.5', 'M4', 'M4.5', 'M5', 'M6', 'M7', 'M8']
 metric_bolt_d_o = [1, 1.1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 7, 8]
 
-def fastener_diameter(F_z, n_l, n_f, tau_max_f):
+def fastener_diameter(F_x, F_z, n_l, n_f, tau_max_f):
 
     F_s = F_z / (n_l * n_f)   # shear
     F_n = F_x / (n_l * n_f)   # axial
@@ -115,8 +113,8 @@ def bearing_stress_v(fasteners, t_lug, t_sc, D_fo):
 def WorstShearMargin_v(fasteners, yield_lug, yield_sc):
     margins = []
     for i in range(len(fasteners)):
-        margins.append(yield_lug/np.abs(fasteners[i][3]))
-        margins.append(yield_sc/np.abs(fasteners[i][4]))
+        margins.append(yield_lug/np.abs(fasteners[i][3])-1)
+        margins.append(yield_sc/np.abs(fasteners[i][4])-1)
         
     return min(margins)
 
@@ -192,8 +190,8 @@ def bearing_stress_h(fasteners, t_lug, t_sc, D_fo):
 def WorstShearMargin_h(fasteners, yield_lug, yield_sc):
     margins = []
     for i in range(len(fasteners)):
-        margins.append(yield_lug/np.abs(fasteners[i][3]))
-        margins.append(yield_sc/np.abs(fasteners[i][4]))
+        margins.append(yield_lug/np.abs(fasteners[i][3])-1)
+        margins.append(yield_sc/np.abs(fasteners[i][4])-1)
         
     return min(margins)
 
@@ -227,14 +225,14 @@ def Ixx(w_1,t_1):
     return I_xx
 
 #bending horizontal plate
-def bending(Ixx,kt, w_2, F_z, t_2, n_l):
-    M = F_z*kt/n_l * (w_2/2)
+def bending(Ixx, w_2, F_z, t_2, n_l):
+    M = F_z/n_l * (w_2/2)
     bending_applied = (M * t_2/2)/Ixx
     bending_margin = ultimate_bending_lug/ bending_applied-1
     return t_2, w_2, bending_margin
 
 #shear vertical
-def length(F_z, kt,t_2, tau_max_l, n_l):
+def length_lug(F_z, kt,t_2, tau_max_l, n_l):
     length = (3*F_z*kt/n_l)/(8*t_2*tau_max_l)
     l = max(length, 0.01)
     shear_margin = (8*t_2*tau_max_l/3/l)/(F_z/n_l) - 1
@@ -278,6 +276,3 @@ def tearout_horizontal(fasteners, w_1, w_2, t_2):
     tearout_margin = F_tear/F_max-1
 
     return tearout_margin
-
-shear_margin, d_metric_o, M_size = fastener_diameter(30000,4,2,480*10**6)
-print(shear_margin, d_metric_o, M_size)
