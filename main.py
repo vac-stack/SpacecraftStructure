@@ -5,10 +5,7 @@ from L_shaped_opt import *
 
 
 # Define overall height of the satellite (and closing panels)
-h = 1.35 # m
-
-# Max mass of components on a panel
-m_components_max = 4 # kg
+h = 1.3445 # m
 
 # Main function
 if __name__ == '__main__':
@@ -130,4 +127,8 @@ if __name__ == '__main__':
 
     # Lug optimization
     # ---------------------------------------------------------------------------------
-    OptimizeLug()
+    lug_mass, n_l = OptimizeLug()
+
+    total_mass = 2*(n_l + 5) * lug_mass + 2 * min_mass + 31.9 + sol['m_shell']
+
+    print(total_mass)

@@ -42,7 +42,6 @@ def second_moment_area_thin_ring(R: float, t1: float) -> float:
     # I ≈ π R^3 t
     return np.pi * (R ** 3) * t1
 
-
 # Buckling models
 
 def sigma_cr_euler(R: float, t1: float, L: float, E: float) -> float:
