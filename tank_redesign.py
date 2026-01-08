@@ -56,7 +56,6 @@ V_circular = np.sqrt(mu / r_init)
 v_disturbance = 90 # [m/s] gravity, solar radiation pressure etc.
 v_req_total = abs(V_elliptical - V_circular)
 
-
 # Mass budget calculations (rewritten rocket equation)
 m_fo = (m_po*((np.e**((v_req_total+v_disturbance)/v_exhaust))-1)) / (
     1 + c_res + c_tO - (c_res+c_tO) * np.e**((v_req_total+v_disturbance)/v_exhaust))  # [kg] propellant mass orbiter
@@ -116,20 +115,17 @@ def find_vessel_radius(volume, height):
     # There should be exactly one valid solution in the physical range
     return valid_roots[0]
 
-
-
 # required tank (cylindrical with spherical endcaps) inner radius (r_int) for fixed volume and total height
 # returns the outer radius of the tank and empty mass
 def tank_radius(h): 
     r_int = find_vessel_radius(V_o, h)
-    print(f"For V={V_o:.3f}, h={h}: Calculated r = {r_int:.3f}")
+    #print(f"For V={V_o:.3f}, h={h}: Calculated r = {r_int:.3f}")
 
     # monoprop system
     R_tank_prop = r_int # [m] fuel tank radius
     t_Ti_prop = (P_f*R_tank_prop)/(sigma_allow_Ti)
     V_Ti_prop = (4/3) * np.pi * ((R_tank_prop + t_Ti_prop)**3 - R_tank_prop**3) + (h-2*r_int)*np.pi*((r_int+t_Ti_prop)**2-r_int**2)
     M_Ti_prop = V_Ti_prop * rho_Ti 
-
 
     return r_int , t_Ti_prop, M_Ti_prop
 
