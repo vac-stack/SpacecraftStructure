@@ -66,7 +66,7 @@ def objective(x, penalize_factor=1e10):
 
     # Mass Calculation (Preserved exactly as requested)
     vol_per_lug = ((w1 * l_dim - n_f * ((d_out)/2)**2 * np.pi) * t1) + \
-                  ((w1 * w2 - n_f * 2 * ((d_out)/2)**2 * np.pi) * t2) 
+                  ((w1 * w2 - n_f * ((d_out)/2)**2 * np.pi) * t2) 
     total_mass = (vol_per_lug * n_l * RHO_LUG)
     
     # Returning total mass with potential penalty
