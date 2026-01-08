@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from typing import Dict, Tuple, Callable, List
 from scipy.optimize import minimize
 
-# ----------------------------
+
 # Materials
-# ----------------------------
+
 @dataclass(frozen=True)
 class Material:
     name: str
@@ -18,11 +18,10 @@ MATERIALS: Dict[str, Material] = {
     "Al7075-T6": Material("Al7075-T6", E=70e9,  nu=0.33, rho=2810, sigma_y=5.03e8),
     "Ti-6Al-4V": Material("Ti-6Al-4V", E=114e9,  nu=0.34	, rho=4420, sigma_y=8.28e8),
     "CFRP": Material("CFRP", E=200e9,  nu=0.4	, rho=1600, sigma_y=1.2e9),
-    # have to change to the correct material
 }
-# ----------------------------
+
 # the geometry and the mass models
-# ----------------------------
+
             #mass
 def shell_surface_area(R: float, L: float) -> float:
     # cylinder lateral area [m^2]
@@ -43,14 +42,10 @@ def second_moment_area_thin_ring(R: float, t1: float) -> float:
     # I ≈ π R^3 t
     return np.pi * (R ** 3) * t1
 
-# ----------------------------
+
 # Buckling models
-# ----------------------------
+
 def sigma_cr_euler(R: float, t1: float, L: float, E: float) -> float:
-    """
-    Eq (4.1): sigma_cr = (pi^2 E I) / (A L^2)
-    using thin ring approximations for I and A.
-    """
     A = ring_cross_section_area(R, t1)
     I = second_moment_area_thin_ring(R, t1)
     return (np.pi**2 * E * I) / (A * L**2)
@@ -65,9 +60,6 @@ def k_param(L: float, R: float, t1: float, nu: float, lam: float) -> float:
 
 def sigma_cr_shell(R: float, t1: float, L: float, mat: Material, p: float,
                    lam_grid: np.ndarray = None) -> float:
-    """
-    Eq (4.2) with minimization over lambda (lam) as requested in the text.
-    """
     if lam_grid is None:
         # Reasonable search grid (you can refine)
         lam_grid = np.linspace(0.2, 20.0, 400)
@@ -83,20 +75,19 @@ def sigma_cr_shell(R: float, t1: float, L: float, mat: Material, p: float,
 
     return bracket * k_min * (np.pi**2 * E) / (12.0 * (1.0 - nu**2)) * (t1 / L)**2
 
-# ----------------------------
+
 # Loads + constraints
-# ----------------------------
+
 @dataclass
 class DesignInputs:
     m_fixed: float          # mass of everything except main shell [kg]
     p_internal: float       # pressure difference in shell [Pa]
-    g_load: float           # launch axial acceleration [m/s^2] (or g*n)
+    g_load: float           # launch axial acceleration [m/s^2]
     fos_buckling: float     # factor of safety for buckling
-    fos_yield: float        # factor of safety for yield (optional)
+    fos_yield: float        # factor of safety for yield
     t_min: float            # min thickness [m]
     R_bounds: Tuple[float, float]
     L_bounds: Tuple[float, float]
-    # constraints from tanks (example)
     R_required_min: float   # minimum radius to fit tanks [m]
     L_required_min: float   # minimum length to fit tanks [m]
 
@@ -128,7 +119,7 @@ def optimize_shell_for_mass_guess(m_guess: float,
 
     bounds = [
         (max(inputs.R_bounds[0], inputs.R_required_min), inputs.R_bounds[1]),
-        (inputs.t_min, None),  # upper thickness not bounded here; you can add if needed
+        (inputs.t_min, None), 
         (max(inputs.L_bounds[0], inputs.L_required_min), inputs.L_bounds[1]),
     ]
 
@@ -235,7 +226,6 @@ def mass_converging_optimizer(inputs: DesignInputs,
     }
 
 # ----------------------------
-# TO BE FILLED WITH CORRECT VALUES
 # ----------------------------
 if __name__ == "__main__":
     inputs = DesignInputs(
@@ -254,7 +244,7 @@ if __name__ == "__main__":
     result = mass_converging_optimizer(
         inputs=inputs,
         material_names=["Al7075-T6", "Ti-6Al-4V", "CFRP"],
-        m0=15.0,      # initial total mass guess [kg]
+        m0=801.32,      # initial total mass guess [kg]
         eps=0.02,     # convergence tolerance [kg]
         max_outer_iter=30
     )
