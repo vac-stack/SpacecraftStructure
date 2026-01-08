@@ -19,7 +19,7 @@ T_X = 0.0002   # Thickness of the wall the lugs attach to
 param_bounds = {
     'n_l': (2, 10),         # number of lugs 
     'n_f': (1, 4),          # number of fasteners 
-    'w_1': (0.015, 0.15),   # width of lug 
+    'w_1': (0.015, 0.3),   # width of lug 
     'w_2': (0.015, 0.15),   # length of lug horizontal plate 
     't_1': (0.002, 0.025),  # thickness lug bottom 
     't_2': (0.002, 0.025),  # thickness lug top 
@@ -54,7 +54,7 @@ def objective(x, penalize_factor=1e10):
         sm_tearout = lg.tearout_vertical(f_list, l_dim, w1, t2)
         
         # 5. Combined Stress Margin 
-        _, sm_combined = lg.length_lug(F_Z, t2, TAU_MAX_L, n_l, w1, M, l_dim)
+        sm_combined = lg.length_lug(F_Z, t2, TAU_MAX_L, n_l, w1, M, l_dim)
         
         margins = [sm_fastener, sm_bending, sm_plates, sm_tearout, sm_combined]
         
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     f_list = lg.bearing_stress_v(f_list, t1, T_X, d_out)
     sm_p = lg.WorstShearMargin_v(f_list, TAU_MAX_L, 400e6)
     sm_t = lg.tearout_vertical(f_list, l_dim, w1, t2)
-    sm_combined_val, _ = lg.length_lug(F_Z, t2, TAU_MAX_L, n_l, w1, M_final, l_dim)
+    sm_combined_val = lg.length_lug(F_Z, t2, TAU_MAX_L, n_l, w1, M_final, l_dim)
 
     # Physical Mass Calculation
     vol_single = ((w1 * l_dim - n_f * (d_out/2)**2 * np.pi) * t1) + \
